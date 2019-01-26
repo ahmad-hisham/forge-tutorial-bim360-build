@@ -1,17 +1,17 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+let router = express.Router();
 
-var oauth = require("../models/forge-oauth");
-var config = require("../config/config");
+const ForgeOAuth = require("../models/forge-oauth");
+const config = require("../config/config");
 
 router.get("/callback", async function (req, res) {
-  var code = req.query.code;
-  var credentials = new oauth(req.session);
+  const credentials = new ForgeOAuth(req.session);
   try {
-    await credentials.setCode(code);
+    await credentials.setCode(req.query.code);
   } catch (error) {
     console.log(error);
   }
+
   res.redirect("/");
 });
 
