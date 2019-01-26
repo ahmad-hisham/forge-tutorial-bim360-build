@@ -12,7 +12,7 @@ router.get("/callback", async function (req, res) {
     console.log(error);
   }
 
-  res.redirect("/");
+  res.redirect("/dm/hubs");
 });
 
 router.get("/url", function (req, res) {
