@@ -28,4 +28,8 @@ app.use("/oauth", authRouter);
 const dmRouter = require("./routes/dm");
 app.use("/dm", dmRouter);
 
+// BIM 360 route
+const bim360Router = require("./routes/bim360");
+app.use("/bim360", bim360Router);
+
 app.listen(3000);

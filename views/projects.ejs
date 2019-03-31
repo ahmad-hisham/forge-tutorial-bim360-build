@@ -15,7 +15,7 @@
     <% for (let project of projects) { %>
       <tr>
         <td>
-          <a href="#"></a><%= project.name %></a>
+          <a href="/bim360/hub/<%= project.hub_id %>/project/<%= project.project_id %>/issues"><%= project.name %></a>
         </td>
         <td>
           <%= project.type %>
