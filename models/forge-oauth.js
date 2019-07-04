@@ -58,6 +58,23 @@ class ForgeOAuth {
     this._session.expiresAt = (now.setSeconds(now.getSeconds() + credentialsPublic.expires_in));
   }
 
+  // Request a 2 legged Authentication Token to read Account-level info 
+  async getTokenAccount() {
+    let forgeOAuthAccount = this.OAuthClient2Legged();
+    let tokenAccount = await forgeOAuthAccount.authenticate();
+
+    return tokenAccount;
+  }
+
+  OAuthClient2Legged() {
+    let client_id = config.credentials.client_id;
+    let client_secret = config.credentials.client_secret;
+    let scopes = config.scopes.account;
+    let autoRefresh = true;
+
+    return new forgeSDK.AuthClientTwoLegged(client_id, client_secret, scopes, autoRefresh);
+  }
+
   OAuthClient() {
     let client_id = config.credentials.client_id;
     let client_secret = config.credentials.client_secret;
