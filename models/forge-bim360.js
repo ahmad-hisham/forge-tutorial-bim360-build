@@ -126,6 +126,24 @@ class ForgeBIM360 {
       console.log(error);
     }
   }
+
+  mergeUsersInIssues(issues, users) {
+    for (var issue of issues) {
+      issue.owner_id = issue.owner;
+      issue.created_by_id = issue.created_by;
+      issue.updated_by_id = issue.updated_by;
+
+      let owner = users.find(user => user.id === issue.owner_id);
+      let createdBy = users.find(user => user.id === issue.created_by_id);
+      let updatedBy = users.find(user => user.id === issue.updated_by_id);
+
+      issue.owner = (owner === undefined) ? "Not Defined" : owner.name;
+      issue.created_by = (createdBy === undefined) ? "Not Defined" : createdBy.name;
+      issue.updated_by = (updatedBy === undefined) ? "Not Defined" : updatedBy.name;
+    }
+
+  return issues;
+  }
 }
 
 module.exports = ForgeBIM360;
