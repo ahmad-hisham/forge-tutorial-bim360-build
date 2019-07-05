@@ -9,14 +9,16 @@ router.get("/hub/:hub_id/project/:project_id/issues", async function (req, res) 
 
   const bim360 = new ForgeBIM360(req.session);
   let issues = await bim360.getIssues(hubId, projectId);
-
   console.log(issues);
 
   let users = await bim360.getUsers(hubId, projectId);
-
   console.log(users);
 
   for (var issue of issues) {
+    issue.owner_id = issue.owner;
+    issue.created_by_id = issue.created_by;
+    issue.updated_by_id = issue.updated_by;
+
     let owner = users.find(user => user.id === issue.owner_id);
     let createdBy = users.find(user => user.id === issue.created_by_id);
     let updatedBy = users.find(user => user.id === issue.updated_by_id);

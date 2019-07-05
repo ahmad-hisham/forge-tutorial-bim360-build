@@ -47,7 +47,7 @@ class ForgeBIM360 {
         comment_count: issue.attributes.comment_count,
         comments_attributes: issue.attributes.comments_attributes,
         created_at: issue.attributes.created_at,
-        created_by_id: issue.attributes.created_by,
+        created_by: issue.attributes.created_by,
         //custom_attributes: issue.attributes.custom_attributes, // Array(0) []
         description: issue.attributes.description,
         due_date: issue.attributes.due_date,
@@ -62,7 +62,7 @@ class ForgeBIM360 {
         ng_issue_type_id: issue.attributes.ng_issue_type_id,
         opened_at: issue.attributes.opened_at,
         opened_by: issue.attributes.opened_by,
-        owner_id: issue.attributes.owner,
+        owner: issue.attributes.owner,
         //permitted_actions: issue.attributes.permitted_actions, //array
         //permitted_attributes: issue.attributes.permitted_attributes, //array
         //permitted_statuses: issue.attributes.permitted_statuses, //array
@@ -81,7 +81,7 @@ class ForgeBIM360 {
         title: issue.attributes.title,
         trades: issue.attributes.trades,
         updated_at: issue.attributes.updated_at,
-        updated_by_id: issue.attributes.updated_by
+        updated_by: issue.attributes.updated_by
       }));
       return issues;
 
