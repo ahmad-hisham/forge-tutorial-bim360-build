@@ -10,38 +10,38 @@
   <table>
     <tr>
       <th>Issue</th>
-      <th>Id</th>
+      <th>ng_issue_type_id</th>
+      <th>ng_issue_subtype_id</th>
+      <th>title</th>
       <th>Type</th>
       <th>attachment_count</th>
       <th>description</th>
       <th>due_date</th>
       <th>lbs_location</th>
-      <th>ng_issue_type_id</th>
-      <th>ng_issue_subtype_id</th>
       <th>owner</th>
       <th>assigned_to</th>
       <th>status</th>
       <th>target_urn</th>
-      <th>title</th>
+      <th>Id</th>
   </tr>
     <% for (let issue of issues) { %>
       <tr>
         <td>
-          <a href="#"><%= issue.title %></a>
+          <a href="#">#<%= issue.identifier %></a>
         </td>
-        <td><%= issue.issue_id %></td>
+        <td><%= issue.ng_issue_type_id %></td>
+        <td><%= issue.ng_issue_subtype_id %></td>
+        <td><%= issue.title %></td>  
         <td><%= issue.type %></td>
         <td><%= issue.attachment_count %></td>
         <td><%= issue.description %></td>
         <td><%= issue.due_date %></td>
         <td><%= issue.lbs_location %></td>
-        <td><%= issue.ng_issue_type_id %></td>
-        <td><%= issue.ng_issue_subtype_id %></td>
         <td><%= issue.owner %></td>
         <td><%= issue.assigned_to %></td>
         <td><%= issue.status %></td>
         <td><%= issue.target_urn %></td>
-        <td><%= issue.title %></td>  
+        <td><%= issue.issue_id %></td>
       </tr>
       <% } %>
   </table>
