@@ -1,6 +1,5 @@
 const forgeSDK = require("forge-apis");
 const ForgeOAuth = require("../models/forge-oauth");
-const request = require("request");
 const requestPromise = require("request-promise-native");
 
 class ForgeBIM360 {
@@ -15,9 +14,9 @@ class ForgeBIM360 {
       let tokenInternal = await this._credentials.getTokenInternal();
 
       const projectsApi = new forgeSDK.ProjectsApi();
-      let data = await projectsApi.getProject(hubId, projectId, this._oauthClient, tokenInternal);
+      let projectData = await projectsApi.getProject(hubId, projectId, this._oauthClient, tokenInternal);
       
-      let issuesContainer = data.body.data.relationships.issues.data.id;
+      let issuesContainer = projectData.body.data.relationships.issues.data.id;
       console.log(issuesContainer);
 
       let basePath = "https://developer.api.autodesk.com";
@@ -27,14 +26,14 @@ class ForgeBIM360 {
         url: basePath + path,
         method: 'GET',
         headers: {
-            "Authorization": "Bearer " + tokenInternal.access_token,
-            'Content-Type': "application/vnd.api+json"
+          "Authorization": "Bearer " + tokenInternal.access_token,
+          "Content-Type": "application/vnd.api+json"
         }
       };
 
       let res = await requestPromise(options);
       let issuesData = JSON.parse(res);
-      console.log(issuesData.data);
+      console.log(issuesData);
 
       let issues = issuesData.data.map(issue => ({
         issue_id: issue.id,
@@ -95,28 +94,29 @@ class ForgeBIM360 {
     try {
       let tokenAccount = await this._credentials.getTokenAccount();
 
-      let accountId = hubId.replace("b.", "");
-      let accountProjectId = projectId.replace("b.", "");
+      //let accountUsersId = hubId.replace("b.", ""); // use this id for account-level users list
+      let projectUsersId = projectId.replace("b.", "");
 
       let basePath = "https://developer.api.autodesk.com";
-      //let path = "/hq/v1/accounts/:account_id/users".replace(":account_id", accountId);
-      let path = "/dm/v2/projects/:project_id/users".replace(":project_id", accountProjectId);
+      //let path = "/hq/v1/accounts/:account_id/users".replace(":account_id", accountUsersId); // use this path for account-level users list
+      let path = "/dm/v2/projects/:project_id/users".replace(":project_id", projectUsersId);
       let queryString = "limit=100";
 
       const options = {  
         url: basePath + path + ((queryString) ? "?" + queryString : ""),
         method: 'GET',
         headers: {
-            "Authorization": "Bearer " + tokenAccount.access_token,
-            'Content-Type': "application/vnd.api+json"
+          "Authorization": "Bearer " + tokenAccount.access_token,
+          "Content-Type": "application/vnd.api+json"
         }
       };
 
       let res = await requestPromise(options);
       let usersData = JSON.parse(res);
+      console.log(usersData);
 
-      let users = usersData.results.map(user => ({ // use usersData.map in case of /hq/ API
-        id: user.oxygenId,  // use user.uid in case of /hq/ API
+      let users = usersData.results.map(user => ({ // use usersData.map in case of account-level users list
+        id: user.oxygenId,  // use user.uid in case of account-level users list
         name: user.name,
         nickname: user.nickname
       }));
