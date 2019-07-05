@@ -17,6 +17,12 @@ router.get("/hub/:hub_id/project/:project_id/issues", async function (req, res) 
   issues = bim360.mergeUsersInIssues(issues,users);
   console.log(issues);
 
+  let locations = await bim360.getLocations(hubId, projectId);
+  console.log(locations);
+
+  issues = bim360.mergeLocationsInIssues(issues,locations);
+  console.log(issues);
+
   res.render("issues", { issues: issues });
 });
 

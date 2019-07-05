@@ -144,6 +144,76 @@ class ForgeBIM360 {
 
   return issues;
   }
+
+  async getLocations(hubId, projectId) {
+    try {
+      let tokenInternal = await this._credentials.getTokenInternal();
+
+      const projectsApi = new forgeSDK.ProjectsApi();
+      let projectData = await projectsApi.getProject(hubId, projectId, this._oauthClient, tokenInternal);
+
+      let locationsContainer = projectData.body.data.relationships.locations.data.id;
+      console.log(locationsContainer);
+
+      let basePath = "https://developer.api.autodesk.com";
+      let path = "/bim360/locations/v2/containers/:container_id/trees/:tree_id/nodes"
+        .replace(":container_id", locationsContainer)
+        .replace(":tree_id", "default");
+
+      const options = {  
+        url: basePath + path,
+        method: 'GET',
+        headers: {
+          "Authorization": "Bearer " + tokenInternal.access_token,
+          'Content-Type': "application/vnd.api+json"
+        }
+      };
+
+      let res = await requestPromise(options);
+      let locationsData = JSON.parse(res);
+      console.log(locationsData);
+
+      let locations = locationsData.results.map(location => ({
+        id: location.id,
+        parent_id: location.parentId,
+        type: location.type,
+        name: location.name,
+        order: location.order
+      }));
+
+      return locations;
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  mergeLocationsInIssues(issues, locations) {
+    for (var issue of issues) {
+      issue.lbs_location_ids = [issue.lbs_location];
+
+      console.log(issue.lbs_location_ids[0]);
+      let location = locations.find(location => location.id === issue.lbs_location_ids[0]);
+  
+      if (location === undefined) continue;
+      let location_full_name = location.name;
+
+      let currentLocation = location;
+      while (currentLocation.parent_id) {
+        console.log(currentLocation.name);
+        let parentlocation = locations.find(parentlocation => parentlocation.id === currentLocation.parent_id);
+        if (parentlocation.type == "Root") break;
+  
+        issue.lbs_location_ids.push(parentlocation.id);
+        location_full_name = parentlocation.name + " > " + location_full_name;
+        currentLocation = parentlocation;
+      }
+  
+      issue.lbs_location =  location_full_name;
+    }
+
+    return issues;
+  }
 }
 
 module.exports = ForgeBIM360;
