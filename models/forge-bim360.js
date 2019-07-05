@@ -94,12 +94,12 @@ class ForgeBIM360 {
     try {
       let tokenAccount = await this._credentials.getTokenAccount();
 
-      //let accountUsersId = hubId.replace("b.", ""); // use this id for account-level users list
-      let projectUsersId = projectId.replace("b.", "");
+      let accountUsersId = hubId.replace("b.", "");
+      //let projectUsersId = projectId.replace("b.", ""); // use this id for project-level users list
 
       let basePath = "https://developer.api.autodesk.com";
-      //let path = "/hq/v1/accounts/:account_id/users".replace(":account_id", accountUsersId); // use this path for account-level users list
-      let path = "/dm/v2/projects/:project_id/users".replace(":project_id", projectUsersId);
+      let path = "/hq/v1/accounts/:account_id/users".replace(":account_id", accountUsersId);
+      //let path = "/dm/v2/projects/:project_id/users".replace(":project_id", projectUsersId); // use this path for project-level users list
       let queryString = "limit=100";
 
       const options = {  
@@ -115,8 +115,8 @@ class ForgeBIM360 {
       let usersData = JSON.parse(res);
       console.log(usersData);
 
-      let users = usersData.results.map(user => ({ // use usersData.map in case of account-level users list
-        id: user.oxygenId,  // use user.uid in case of account-level users list
+      let users = usersData.map(user => ({ // use usersData.results.map for project-level users list
+        id: user.uid,  // use user.oxygenId for project-level users list
         name: user.name,
         nickname: user.nickname
       }));
