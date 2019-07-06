@@ -20,7 +20,7 @@ class ForgeBIM360 {
       console.log(issuesContainer);
 
       let basePath = "https://developer.api.autodesk.com";
-      let path = "/issues/v1/containers/:project_id/quality-issues".replace(":project_id", issuesContainer);
+      let path = "/issues/v1/containers/:container_id/quality-issues".replace(":container_id", issuesContainer);
 
       const options = {  
         url: basePath + path,
@@ -170,7 +170,7 @@ class ForgeBIM360 {
         method: 'GET',
         headers: {
           "Authorization": "Bearer " + tokenInternal.access_token,
-          'Content-Type': "application/vnd.api+json"
+          "Content-Type": "application/vnd.api+json"
         }
       };
 
