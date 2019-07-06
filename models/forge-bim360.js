@@ -54,14 +54,11 @@ class ForgeBIM360 {
         description: issue.attributes.description,
         due_date: issue.attributes.due_date,
         identifier: issue.attributes.identifier,
-        issue_sub_type: issue.attributes.issue_sub_type,
-        issue_type: issue.attributes.issue_type,
-        issue_type_id: issue.attributes.issue_type_id,
         lbs_location: issue.attributes.lbs_location,
         location_description: issue.attributes.location_description,
         markup_metadata: issue.attributes.markup_metadata,
-        ng_issue_subtype_id: issue.attributes.ng_issue_subtype_id,
-        ng_issue_type_id: issue.attributes.ng_issue_type_id,
+        ng_issue_subtype: issue.attributes.ng_issue_subtype_id,
+        ng_issue_type: issue.attributes.ng_issue_type_id,
         opened_at: issue.attributes.opened_at,
         opened_by: issue.attributes.opened_by,
         owner: issue.attributes.owner,
@@ -90,6 +87,71 @@ class ForgeBIM360 {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getIssueTypes(hubId, projectId) {
+    try {
+      let tokenInternal = await this._credentials.getTokenInternal();
+
+      const projectsApi = new forgeSDK.ProjectsApi();
+      let projectData = await projectsApi.getProject(hubId, projectId, this._oauthClient, tokenInternal);
+      
+      let issuesContainer = projectData.body.data.relationships.issues.data.id;
+      console.log(issuesContainer);
+
+      let basePath = "https://developer.api.autodesk.com";
+      let path = "/issues/v1/containers/:container_id/ng-issue-types".replace(":container_id", issuesContainer);
+      let queryString = "include=subtypes";
+
+      const options = {  
+        url: basePath + path + ((queryString) ? "?" + queryString : ""),
+        method: 'GET',
+        headers: {
+          "Authorization": "Bearer " + tokenInternal.access_token,
+          "Content-Type": "application/vnd.api+json"
+        }
+      };
+
+      let res = await requestPromise(options);
+      let issueTypesData = JSON.parse(res);
+      console.log(issueTypesData);
+
+      let issueTypes = issueTypesData.results.map(issueType => ({
+        id: issueType.id,
+        title: issueType.title,
+        is_active: issueType.isActive,
+        order_index: issueType.orderIndex,
+        subtypes: issueType.subtypes.map(issueSubtype => ({
+          id: issueSubtype.id,
+          title: issueSubtype.title,
+          is_active: issueSubtype.isActive,
+          order_index: issueSubtype.orderIndex          
+        }))
+      }));
+
+      return issueTypes;
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  mergeIssueTypesInIssues(issues, issueTypes) {
+    for (var issue of issues) {
+      issue.ng_issue_type_id = issue.ng_issue_type;
+      issue.ng_issue_subtype_id = issue.ng_issue_subtype;
+
+      let issueType = issueTypes.find(issueType => issueType.id === issue.ng_issue_type_id);
+      console.log(issueType);
+
+      let issueSubtype = issueType.subtypes.find(issueSubtype => issueSubtype.id === issue.ng_issue_subtype_id);
+      console.log(issueSubtype);
+
+      issue.ng_issue_type = (issueType === undefined) ? "Not Defined" : issueType.title;
+      issue.ng_issue_subtype = (issueSubtype === undefined) ? "Not Defined" : issueSubtype.title;
+    }
+
+  return issues;
   }
 
   async getUsers(hubId, projectId) {
